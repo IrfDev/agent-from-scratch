@@ -1,9 +1,10 @@
+import type { AIBaseMessage, AIMessage } from '../types'
 import { ollama } from './ai'
 
-export const runLLM = async ({ userMessage }: { userMessage: string }) => {
+export const runLLM = async ({ messages }: { messages: AIBaseMessage[] }) => {
   const resp = await ollama.chat({
     model: 'llama3.1',
-    messages: [{ role: 'user', content: userMessage }],
+    messages,
   })
 
   return resp.message.content

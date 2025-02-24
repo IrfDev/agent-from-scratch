@@ -1,3 +1,28 @@
 {
-  "messages": []
+  "messages": [
+    {
+      "role": "user",
+      "content": "hello my name is Irving",
+      "id": "e6bd3f8c-7c92-4133-925c-0bf91d8c13bd",
+      "createdAt": "2025-02-24T16:38:02.436Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Hello Irving! It's nice to meet you. Is there something I can help you with or would you like to chat for a bit?",
+      "id": "a65bffab-779e-4cf7-b092-39e0ff5a1159",
+      "createdAt": "2025-02-24T16:38:02.436Z"
+    },
+    {
+      "role": "user",
+      "content": "hello, what is my name?",
+      "id": "0cb7f22a-5b49-4ad6-930b-5af626097aaa",
+      "createdAt": "2025-02-24T16:38:05.767Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Your name is Irving! We just had a chance to introduce ourselves earlier. How are you doing today, Irving?",
+      "id": "4c41b22d-3f4a-43da-971a-784b75ef3527",
+      "createdAt": "2025-02-24T16:38:05.767Z"
+    }
+  ]
 }
