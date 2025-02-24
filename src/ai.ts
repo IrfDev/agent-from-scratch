@@ -1,3 +1,5 @@
-import OpenAI from 'openai'
+import { Ollama } from 'ollama'
 
-export const openai = new OpenAI()
+export const ollama = new Ollama({
+  host: `http://192.168.1.83:30090`,
+})
