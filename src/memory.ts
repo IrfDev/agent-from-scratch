@@ -41,3 +41,12 @@ export const getMessages = async () => {
 
   return db.data.messages.map(removeMetadata)
 }
+
+export const saveToolResponse = async (
+  toolCallId: string,
+  toolResponse: string
+) => {
+  return await addMessages([
+    { role: 'tool', content: toolResponse, tool_call_id: toolCallId },
+  ])
+}
