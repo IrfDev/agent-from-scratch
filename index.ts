@@ -1,7 +1,6 @@
 import 'dotenv/config'
 
 import { runAgent } from './src/agent'
-import { WebScrapperTool } from './src/tools/webscrapper'
 import { FeedFetcherTool } from './src/tools/feedFetcher'
 const userMessage = process.argv[2]
 
@@ -12,7 +11,7 @@ if (!userMessage) {
 
 const response = await runAgent({
   userMessage,
-  tools: [WebScrapperTool.tool, FeedFetcherTool.tool],
+  tools: [FeedFetcherTool.tool],
 })
 
 console.log(response)

@@ -24,7 +24,6 @@ export class FeedFetcherTool {
       description: `Use this tool to get the latest articles from different RSS sources, scrap the articles and return a mardown summary`,
       parameters: {
         type: 'object',
-
         properties: {},
         required: [],
       },
@@ -45,7 +44,7 @@ export class FeedFetcherTool {
     }
   }
 
-  static formatText(originalText: string) {
+  static getHtmlString(originalText: string) {
     let doc = cheerio.load(originalText)
     doc(
       'script, style, noscript, iframe, svg, nav, footer, header, aside, form, button'
@@ -54,6 +53,12 @@ export class FeedFetcherTool {
     let htmlText = doc('body').html() || ''
 
     return this.removeEmojis(htmlText)
+  }
+
+  static getHtmlTitle(originalText: string) {
+    let doc = cheerio.load(originalText)
+
+    return doc('head title').text().trim()
   }
 
   static removeEmojis(text: string) {
@@ -71,12 +76,14 @@ export class FeedFetcherTool {
 
       let htmlContent = await response.text()
 
-      let htmlText = await this.formatText(htmlContent)
+      let htmlText = await this.getHtmlString(htmlContent)
+
+      let htmlTitle = this.getHtmlTitle(htmlContent)
 
       return {
         content: htmlText,
         url: result.url || '',
-        title: result.title || '',
+        title: htmlTitle || result.title || '',
         snippet: this.generateExcerpt(htmlText, this.MAX_LENGTH),
       }
     } catch (error) {
@@ -132,10 +139,8 @@ export class FeedFetcherTool {
 
       let articles = []
 
-      for await (const linkEl of [links[6]]) {
+      for await (const linkEl of links) {
         let article = await this.scrapWebPage(linkEl)
-
-        console.log('article.url', article.url)
 
         let htmlToMarkdown = NodeHtmlMarkdown.translate(article.content, {
           keepDataImages: true,
@@ -144,7 +149,7 @@ export class FeedFetcherTool {
         console.log('htmlToMarkdown', htmlToMarkdown)
 
         let ollamaSummary = await runLLM({
-          model: 'llama3.3:latest',
+          // model: 'llama3.3:latest',
           messages: [
             {
               role: 'user',
@@ -170,7 +175,11 @@ export class FeedFetcherTool {
 
         let ollamaStringSummary = ollamaSummary.message.content
 
-        articles.push(ollamaStringSummary)
+        articles.push({
+          title: article.title,
+          content: ollamaStringSummary,
+          url: article.url,
+        })
       }
 
       return articles
@@ -189,8 +198,6 @@ export class FeedFetcherTool {
       rrssArticlesPromises.map((result) => this.getFeedArticles(result))
     )
 
-    return JSON.stringify(
-      searchPromises.map((result) => JSON.stringify(result))
-    )
+    return searchPromises.flat()
   }
 }

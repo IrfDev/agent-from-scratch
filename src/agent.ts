@@ -1,10 +1,8 @@
-import type { AIMessage } from '../types'
 import { runLLM } from './llm'
 import {
   addMessages,
   addMetadata,
   getMessages,
-  removeMetadata,
   saveToolResponse,
 } from './memory'
 import { runTool } from './toolRunner'
