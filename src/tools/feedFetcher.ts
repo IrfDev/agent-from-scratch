@@ -6,6 +6,7 @@ import { NodeHtmlMarkdown } from 'node-html-markdown'
 
 import type { Tool } from 'ollama'
 import { runLLM } from '../llm'
+import { saveMarkdown } from '../utils/generateMarkdown'
 
 export class FeedFetcherTool {
   static FEED_RSS_URL = [
@@ -47,7 +48,7 @@ export class FeedFetcherTool {
   static getHtmlString(originalText: string) {
     let doc = cheerio.load(originalText)
     doc(
-      'script, style, noscript, iframe, svg, nav, footer, header, aside, form, button'
+      'script, style, noscript, iframe, svg, nav, footer, header, aside, form, button',
     ).remove()
 
     let htmlText = doc('body').html() || ''
@@ -67,7 +68,7 @@ export class FeedFetcherTool {
   }
 
   static async scrapWebPage(
-    result: Partial<WebSearchResult>
+    result: Partial<WebSearchResult>,
   ): Promise<WebSearchPageResult> {
     // Integration point for all functions to work together
 
@@ -116,7 +117,7 @@ export class FeedFetcherTool {
   }
 
   static getLinksFromHtml(
-    htmlContent: string
+    htmlContent: string,
   ): { url: string; title: string }[] {
     const $ = cheerio.load(htmlContent)
     const links = $('a[target=_blank]')
@@ -146,10 +147,8 @@ export class FeedFetcherTool {
           keepDataImages: true,
         })
 
-        console.log('htmlToMarkdown', htmlToMarkdown)
-
         let ollamaSummary = await runLLM({
-          // model: 'llama3.3:latest',
+          model: 'llama3.3:latest',
           messages: [
             {
               role: 'user',
@@ -191,13 +190,19 @@ export class FeedFetcherTool {
 
   static async getFeeds({}: any) {
     let rrssArticlesPromises = await Promise.all(
-      this.FEED_RSS_URL.map((rrssUrl) => this.fetchFeedLink(rrssUrl))
+      this.FEED_RSS_URL.map((rrssUrl) => this.fetchFeedLink(rrssUrl)),
     )
 
-    let searchPromises = await Promise.all(
-      rrssArticlesPromises.map((result) => this.getFeedArticles(result))
+    let articlesSummaries = await Promise.all(
+      rrssArticlesPromises.map((result) => this.getFeedArticles(result)),
     )
 
-    return searchPromises.flat()
+    let flatArticles = articlesSummaries.flat()
+
+    await saveMarkdown(flatArticles)
+
+    return JSON.stringify(
+      flatArticles.map((art) => JSON.stringify(art.content)),
+    )
   }
 }

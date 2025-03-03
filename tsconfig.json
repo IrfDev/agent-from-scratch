@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
@@ -17,6 +16,26 @@
     "skipLibCheck": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "lib": [
+      "es2018",
+      "DOM",
+      "ES5",
+      "ES6",
+      "ES7",
+      "es2019.array",
+      "ES2021.WeakRef",
+      "ES2020.BigInt",
+      "ESNext.Intl"
+    ],
+
+    "typeRoots": ["node_modules/@types", "typesDef"]
+  },
+  "include": [
+    "src/**/**.ts",
+    "typesDef/**/**.d.ts",
+    "typesDef/**/*.d.ts",
+    "src/**/**/**.ts"
+  ]
 }
